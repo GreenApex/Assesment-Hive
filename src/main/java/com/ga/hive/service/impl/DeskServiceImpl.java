@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.antlr.stringtemplate.language.Cat;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,15 +30,12 @@ import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.exception.GAException;
 import com.ga.hive.persistence.DbManager;
 import com.ga.hive.persistence.entity.AllotTask;
-import com.ga.hive.persistence.entity.AnsQuestionnaire;
-import com.ga.hive.persistence.entity.AnsTemplate;
 import com.ga.hive.persistence.entity.Category;
 import com.ga.hive.persistence.entity.CategoryDTO;
 import com.ga.hive.persistence.entity.Counter;
 import com.ga.hive.persistence.entity.Principle;
-import com.ga.hive.persistence.entity.PrincipleDTO;
 import com.ga.hive.persistence.entity.Questionnaire;
-import com.ga.hive.persistence.entity.TaskTemplate;
+import com.ga.hive.persistence.entity.QuestionnaireDTO;
 import com.ga.hive.persistence.entity.Team;
 import com.ga.hive.persistence.entity.TemplateDTO;
 import com.ga.hive.persistence.entity.User;
@@ -52,7 +48,6 @@ import com.ga.hive.service.ITeamService;
 import com.ga.hive.service.IUserService;
 import com.google.gson.Gson;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeskServiceImpl.
  *
@@ -63,7 +58,6 @@ public class DeskServiceImpl implements IDeskService {
 
     private static final Logger LOGGER = Logger.getLogger(DeskServiceImpl.class);
 
-    /** The task service. */
     @Autowired
     ITaskService taskService;
 
@@ -90,7 +84,7 @@ public class DeskServiceImpl implements IDeskService {
     /*
      * (non-Javadoc)
      * 
-     * @see com.ga.hive.service.IDeskService#saveTemplate(com.ga.hive.persistence.entity.TemplateDTO)
+     * @see com.ga.hive.service.IDeskService#saveTemplate(com.ga.hive.persistence .entity.TemplateDTO)
      */
     @Override
     public Boolean saveTemplate(TemplateDTO templateDTO) throws GAException {
@@ -236,102 +230,6 @@ public class DeskServiceImpl implements IDeskService {
     /*
      * (non-Javadoc)
      * 
-     * @see com.ga.hive.service.IDeskService#saveSurveyResult(com.ga.hive.persistence.entity.AnsTemplate)
-     */
-    @Override
-    public Boolean saveSurveyResult(AnsTemplate saveSurveyResult) throws GAException {
-
-        try {
-            Connection connection = DbManager.getConnection();
-            Statement stmt = connection.createStatement();
-            String query = "INSERT INTO QATemplates PARTITION (templateid = '" + saveSurveyResult.getTemplateID()
-                    + "', userid= '" + saveSurveyResult.getUserID() + "') VALUES ";
-            List<AnsQuestionnaire> ansQuestionnaires = saveSurveyResult.getAnsQuestionnaire();
-            Iterator<AnsQuestionnaire> iterator = ansQuestionnaires.iterator();
-            int index = 0;
-            while (iterator.hasNext()) {
-                index++;
-                AnsQuestionnaire ansTemplate = iterator.next();
-                Gson gson = new Gson();
-                String ans = gson.toJson(ansTemplate);
-                String creationtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                if (index <= 1) {
-                    query = query + "('" + saveSurveyResult.getTemplateName() + "','" + ans + "', '" + creationtime
-                            + "')";
-                } else
-                    query = query + ",('" + saveSurveyResult.getTemplateName() + "','" + ans + "','" + creationtime
-                            + "')";
-            }
-            LOGGER.info(": " + query);
-            boolean check = stmt.execute(query);
-            DbManager.closeConnection(connection);
-            return check;
-        } catch (SQLException exception) {
-
-            exception.printStackTrace();
-            throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
-        }
-
-    }
-
-    // @Override
-    // public Boolean saveReviewedTemplates(AllotTask task) throws GAException {
-    // try {
-    // Connection connection = DbManager.getConnection();
-    // Statement stmt = connection.createStatement();
-    // TaskTemplate template = task.getTaskTemplate();
-    // CategoryDTO categoryDTO = template.getCategory();
-    // String query = "INSERT INTO reviewedTemplates VALUES ";
-    //
-    // LOGGER.info(": " + query);
-    // List<PrincipleDTO> list = categoryDTO.getPrincipleList();
-    // Iterator<PrincipleDTO> iterator = list.iterator();
-    // int index = 0;
-    // while (iterator.hasNext()) {
-    // index++;
-    // PrincipleDTO principle = iterator.next();
-    //
-    // /**
-    // * Preparing QA column
-    // */
-    // Gson gson = new Gson();
-    //
-    // TaskTemplate reviewedTemplate = new TaskTemplate();
-    // List<PrincipleDTO> rList = new ArrayList<PrincipleDTO>();
-    // rList.add(principle);
-    // CategoryDTO rCategory = new CategoryDTO();
-    // rCategory.setCatrgoryID(template.getCategory().getCatrgoryID());
-    // rCategory.setCatrgoryName(template.getCategory().getCatrgoryName());
-    // rCategory.setPrincipleList(rList);
-    // reviewedTemplate.setCategory(rCategory);
-    // String qa = gson.toJson(reviewedTemplate);
-    //
-    // String creationtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-    //
-    // if (index <= 1) {
-    // query = query + "('" + task.getUserid() + "','" + template.getTemplateName() + "',  '"
-    // + categoryDTO.getCatrgoryName() + "', '" + principle.getPrincipleName() + "','" + qa
-    // + "','" + creationtime + "')";
-    // } else
-    // query = query + ",( '" + task.getUserid() + "', '" + template.getTemplateName() + "', '"
-    // + categoryDTO.getCatrgoryName() + "', '" + principle.getPrincipleName() + "','" + qa
-    // + "','" + creationtime + "')";
-    // }
-    //
-    // LOGGER.info(": " + query);
-    // boolean check = stmt.execute(query);
-    // DbManager.closeConnection(connection);
-    // return check;
-    // } catch (SQLException exception) {
-    //
-    // exception.printStackTrace();
-    // throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
-    // }
-    // }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.ga.hive.service.IDeskService#getAllTemplates()
      */
     @Override
@@ -438,6 +336,49 @@ public class DeskServiceImpl implements IDeskService {
         List<User> users = userService.getActiveUsers();
         counter.setUsersCount(users.size());
         return counter;
+    }
+
+    @Override
+    public Boolean saveReviewedTemplates(List<QuestionnaireDTO> list, String userid) throws GAException {
+        try {
+            Connection connection = DbManager.getConnection();
+            Statement stmt = connection.createStatement();
+            String query = "INSERT INTO reviewedTemplates VALUES ";
+
+            LOGGER.info(": " + query);
+            Iterator<QuestionnaireDTO> iterator = list.iterator();
+            int index = 0;
+            while (iterator.hasNext()) {
+                index++;
+                QuestionnaireDTO questionnaire = iterator.next();
+
+                /**
+                 * Preparing QA column
+                 */
+                Gson gson = new Gson();
+                String qa = gson.toJson(questionnaire);
+
+                String creationtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+                if (index <= 1) {
+                    query = query + "('" + userid + "','" + questionnaire.getTemplateName() + "',  '"
+                            + questionnaire.getCategoryName() + "', '" + questionnaire.getPrincipleName() + "','" + qa
+                            + "','" + creationtime + "')";
+                } else
+                    query = query + ",( '" + userid + "','" + questionnaire.getTemplateName() + "',  '"
+                            + questionnaire.getCategoryName() + "', '" + questionnaire.getPrincipleName() + "','" + qa
+                            + "','" + creationtime + "')";
+            }
+
+            LOGGER.info(": " + query);
+            boolean check = stmt.execute(query);
+            DbManager.closeConnection(connection);
+            return check;
+        } catch (SQLException exception) {
+
+            exception.printStackTrace();
+            throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
+        }
     }
 
 }

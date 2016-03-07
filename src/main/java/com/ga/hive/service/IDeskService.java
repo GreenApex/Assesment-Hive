@@ -3,12 +3,10 @@ package com.ga.hive.service;
 import java.util.List;
 
 import com.ga.hive.exception.GAException;
-import com.ga.hive.persistence.entity.AllotTask;
-import com.ga.hive.persistence.entity.AnsTemplate;
 import com.ga.hive.persistence.entity.Counter;
+import com.ga.hive.persistence.entity.QuestionnaireDTO;
 import com.ga.hive.persistence.entity.TemplateDTO;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface IDeskService.
  *
@@ -43,24 +41,6 @@ public interface IDeskService {
     List<TemplateDTO> getAllTemplates() throws GAException;
 
     /**
-     * Save survey result.
-     *
-     * @param saveSurveyResult the save survey result
-     * @return the boolean
-     * @throws GAException the GA exception
-     */
-    Boolean saveSurveyResult(AnsTemplate saveSurveyResult) throws GAException;
-
-    /**
-     * Save reviewed templates.
-     *
-     * @param task the task
-     * @return the boolean
-     * @throws GAException the GA exception
-     */
-//    Boolean saveReviewedTemplates(AllotTask task) throws GAException;
-
-    /**
      * Gets the desk members counts.
      *
      * @param userID the user id
@@ -68,4 +48,12 @@ public interface IDeskService {
      * @throws GAException the GA exception
      */
     Counter getDeskMembersCounts(String userID) throws GAException;
+
+    /**
+     * Save reviewed templates.
+     *
+     * @param list the list
+     * @return the boolean
+     */
+    Boolean saveReviewedTemplates(List<QuestionnaireDTO> list, String userid) throws GAException;
 }

@@ -67,6 +67,14 @@ public class QuestionnaireDTO {
         this.templateName = templateName;
     }
 
+    public String getPrincipleName() {
+        return principleName;
+    }
+
+    public void setPrincipleName(String principleName) {
+        this.principleName = principleName;
+    }
+
     @Override
     public String toString() {
         return "QuestionnaireDTO [qID=" + qID + ", name=" + name + ", comment=" + comment + ", rating=" + rating
