@@ -1,13 +1,14 @@
 package com.ga.hive.persistence.entity;
 
-import java.util.List;
-
 public class Report {
 
     public String userID;
     public String templatename;
-    public String templatedID;
-    ReportCategory category;
+    public String categoryName;
+    public String principleName;
+    public String qaID;
+    public String qaName;
+    public String rating;
 
     public String getUserID() {
         return userID;
@@ -25,26 +26,51 @@ public class Report {
         this.templatename = templatename;
     }
 
-    public String getTemplatedID() {
-        return templatedID;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setTemplatedID(String templatedID) {
-        this.templatedID = templatedID;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public void setCategory(ReportCategory category) {
-        this.category = category;
+    public String getPrincipleName() {
+        return principleName;
     }
 
-    public ReportCategory getCategory() {
-        return category;
+    public void setPrincipleName(String principleName) {
+        this.principleName = principleName;
+    }
+
+    public String getQaID() {
+        return qaID;
+    }
+
+    public void setQaID(String qaID) {
+        this.qaID = qaID;
+    }
+
+    public String getQaName() {
+        return qaName;
+    }
+
+    public void setQaName(String qaName) {
+        this.qaName = qaName;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 
     @Override
     public String toString() {
-        return "Report [userID=" + userID + ", templatename=" + templatename + ", templatedID=" + templatedID
-                + ", category=" + category + "]";
+        return "Report [userID=" + userID + ", templatename=" + templatename + ", categoryName=" + categoryName
+                + ", principleName=" + principleName + ", qaID=" + qaID + ", qaName=" + qaName + ", rating=" + rating
+                + "]";
     }
 
 }

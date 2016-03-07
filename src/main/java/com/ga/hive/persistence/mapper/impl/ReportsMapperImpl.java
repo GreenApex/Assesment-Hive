@@ -15,21 +15,29 @@ import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.exception.GAException;
 import com.ga.hive.persistence.DbManager;
 import com.ga.hive.persistence.entity.AllotTask;
-import com.ga.hive.persistence.entity.CategoryDTO;
-import com.ga.hive.persistence.entity.PrincipleDTO;
 import com.ga.hive.persistence.entity.QuestionnaireDTO;
 import com.ga.hive.persistence.entity.Report;
-import com.ga.hive.persistence.entity.ReportCategory;
-import com.ga.hive.persistence.entity.ReportPrinciple;
-import com.ga.hive.persistence.entity.ReportQA;
-import com.ga.hive.persistence.entity.TaskTemplate;
 import com.ga.hive.persistence.mapper.IReportsMapper;
 import com.google.gson.Gson;
 
+/**
+ * The Class ReportsMapperImpl.
+ *
+ * @author Shalaka Nayal
+ */
+
 @Repository
 public class ReportsMapperImpl implements IReportsMapper {
+
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = Logger.getLogger(ReportsMapperImpl.class);
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.persistence.mapper.IReportsMapper#getReports(java.lang.String, java.lang.String,
+     * java.lang.String, java.lang.String)
+     */
     @Override
     public List<Report> getReports(String categoryName, String principleName, String startDate, String endDate)
             throws GAException {
@@ -39,7 +47,7 @@ public class ReportsMapperImpl implements IReportsMapper {
          */
         String query = getQuery(categoryName, principleName, startDate, endDate);
 
-        List<AllotTask> tasks = new ArrayList<AllotTask>();
+        List<QuestionnaireDTO> answeredQuestionnaire = new ArrayList<QuestionnaireDTO>();
         try {
             Connection connection = DbManager.getConnection();
             Statement statement = connection.createStatement();
@@ -51,14 +59,13 @@ public class ReportsMapperImpl implements IReportsMapper {
                 String qa = res.getString("qa");
 
                 Gson gson = new Gson();
-                TaskTemplate task = gson.fromJson(qa, TaskTemplate.class);
-//                allotTask.setTaskTemplate(task);
+                QuestionnaireDTO questionnaire = gson.fromJson(qa, QuestionnaireDTO.class);
 
-                tasks.add(allotTask);
+                answeredQuestionnaire.add(questionnaire);
             }
 
             DbManager.closeConnection(connection);
-            List<Report> reports = convertToReports(tasks);
+            List<Report> reports = convertToReports(answeredQuestionnaire);
             return reports;
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -67,49 +74,39 @@ public class ReportsMapperImpl implements IReportsMapper {
         }
     }
 
-    private List<Report> convertToReports(List<AllotTask> tasks) {
+    /**
+     * Convert to reports.
+     *
+     * @param answeredQuestionnaire the answered questionnaire
+     * @return the list
+     */
+    private List<Report> convertToReports(List<QuestionnaireDTO> answeredQuestionnaire) {
         List<Report> reports = new ArrayList<Report>();
-        Iterator<AllotTask> iterator = tasks.iterator();
+        Iterator<QuestionnaireDTO> iterator = answeredQuestionnaire.iterator();
         while (iterator.hasNext()) {
-            AllotTask task = iterator.next();
+            QuestionnaireDTO qa = iterator.next();
 
             Report report = new Report();
-
-            report.setUserID(task.getUserid());
-//            TaskTemplate template = task.getTaskTemplate();
-//            report.setTemplatedID(template.getTemplateID());
-//            report.setTemplatename(template.getTemplateName());
-
-            ReportCategory reportCategory = new ReportCategory();
-//            CategoryDTO categoryDTO = template.getCategory();
-//            reportCategory.setCategoryID(categoryDTO.getCatrgoryID());
-//            reportCategory.setCategoryName(categoryDTO.getCatrgoryName());
-
-//            PrincipleDTO principle = categoryDTO.getPrincipleList().get(0);
-            ReportPrinciple reportPrinciple = new ReportPrinciple();
-//            reportPrinciple.setPrincipleID(principle.getPrincipleID());
-//            reportPrinciple.setPrincipleName(principle.getPrincipleName());
-
-//            List<QuestionnaireDTO> originalList = principle.getQuestionnaireList();
-//            Iterator<QuestionnaireDTO> iterator2 = originalList.iterator();
-//            List<ReportQA> reportQAList = new ArrayList<ReportQA>();
-//            while (iterator2.hasNext()) {
-//                QuestionnaireDTO question = iterator2.next();
-//                ReportQA reportQA = new ReportQA();
-//                reportQA.setQaID(question.getqID());
-//                reportQA.setQaName(question.getName());
-//                reportQA.setRating(question.getRating());
-//                reportQAList.add(reportQA);
-//            }
-//            reportPrinciple.setReportQA(reportQAList);
-//            reportCategory.setReportPrinciple(reportPrinciple);
-//            report.setCategory(reportCategory);
-//
-//            reports.add(report);
+            report.setTemplatename(qa.getTemplateName());
+            report.setCategoryName(qa.getCategoryName());
+            report.setPrincipleName(qa.getPrincipleName());
+            report.setQaID(qa.getqID());
+            report.setQaName(qa.getName());
+            report.setRating(qa.getRating());
+            reports.add(report);
         }
         return reports;
     }
 
+    /**
+     * Gets the query.
+     *
+     * @param categoryName the category name
+     * @param principleName the principle name
+     * @param startDate the start date
+     * @param endDate the end date
+     * @return the query
+     */
     private String getQuery(String categoryName, String principleName, String startDate, String endDate) {
 
         String query = null;
