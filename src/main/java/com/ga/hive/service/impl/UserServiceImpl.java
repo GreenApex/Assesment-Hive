@@ -15,7 +15,7 @@ import com.ga.hive.service.IUserService;
 /**
  * The Class UserServiceImpl.
  *
- * @author Shalaka
+ * @author Shalaka Nayal
  */
 @Service
 public class UserServiceImpl implements IUserService {
@@ -35,6 +35,9 @@ public class UserServiceImpl implements IUserService {
         LOGGER.info("authenticateUser: " + email + "," + password);
         User user = userMapper.getUserByEmail(email);
         if (user == null) {
+            throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
+        }
+        if (!user.isAcitve()) {
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
         if (user.getPassword().equals(password)) {
@@ -88,5 +91,11 @@ public class UserServiceImpl implements IUserService {
         } else {
             return users;
         }
+    }
+
+    @Override
+    public boolean deleteUsers(String email) throws GAException {
+        LOGGER.info("deleteUsers: " + email);
+        return userMapper.makeUserInactive(email);
     }
 }

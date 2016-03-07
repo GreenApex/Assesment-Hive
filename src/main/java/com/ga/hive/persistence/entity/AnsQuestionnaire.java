@@ -6,6 +6,15 @@ public class AnsQuestionnaire {
     String questionnnaireName;
     String comment;
     String rating;
+    String attachment;
+
+    public String getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(String attachment) {
+        this.attachment = attachment;
+    }
 
     public String getQuestionnnaireID() {
         return questionnnaireID;
@@ -42,7 +51,7 @@ public class AnsQuestionnaire {
     @Override
     public String toString() {
         return "AnsQuestionnaire [questionnnaireID=" + questionnnaireID + ", questionnnaireName=" + questionnnaireName
-                + ", comment=" + comment + ", rating=" + rating + "]";
+                + ", comment=" + comment + ", rating=" + rating + ", attachment=" + attachment + "]";
     }
 
 }

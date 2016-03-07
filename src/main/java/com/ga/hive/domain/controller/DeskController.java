@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.domain.util.JsonUtility;
 import com.ga.hive.exception.GAException;
-import com.ga.hive.persistence.entity.AnsTemplate;
+import com.ga.hive.persistence.entity.AllotTask;
+import com.ga.hive.persistence.entity.Counter;
 import com.ga.hive.persistence.entity.TemplateDTO;
 import com.ga.hive.service.IDeskService;
 
@@ -62,20 +63,32 @@ public class DeskController {
         }
     }
 
-    @RequestMapping(value = "/saveSurveyResult", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody String saveSurveyResult(@RequestBody AnsTemplate saveSurveyResult) {
-        LOGGER.info("saveSurveyResult controller");
-        try {
-
-            Boolean dto = deskService.saveSurveyResult(saveSurveyResult);
-
-            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, dto);
-        } catch (GAException e) {
-            LOGGER.error(" " + e);
-            return JsonUtility.getJson(e.getCode(), e.getDescription());
-        }
-
-    }
+    /*
+     * @RequestMapping(value = "/saveSurveyResult", method = RequestMethod.POST, consumes =
+     * MediaType.APPLICATION_JSON_VALUE) public @ResponseBody String saveSurveyResult(@RequestBody AnsTemplate
+     * saveSurveyResult) { LOGGER.info("saveSurveyResult controller"); try {
+     * 
+     * Boolean dto = deskService.saveSurveyResult(saveSurveyResult);
+     * 
+     * return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, dto); } catch (GAException e) { LOGGER.error(" " + e);
+     * return JsonUtility.getJson(e.getCode(), e.getDescription()); }
+     * 
+     * }
+     */
+//    @RequestMapping(value = "/saveSurveyResult", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public @ResponseBody String saveSurveyResult(@RequestBody AllotTask reviewedTask) {
+//        LOGGER.info("saveSurveyResult controller");
+//        try {
+//
+//            Boolean check = deskService.saveReviewedTemplates(reviewedTask);
+//
+//            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, check);
+//        } catch (GAException e) {
+//            LOGGER.error(" " + e);
+//            return JsonUtility.getJson(e.getCode(), e.getDescription());
+//        }
+//
+//    }
 
     @RequestMapping(value = "/getAllTemplates", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String getAllTemplates() {
@@ -90,5 +103,18 @@ public class DeskController {
             return JsonUtility.getJson(e.getCode(), e.getDescription());
         }
 
+    }
+
+    @RequestMapping(value = "/getCounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String getCounts(@RequestParam("userID") String userID) {
+        LOGGER.info("getCounts Controller");
+        try {
+
+            Counter counter = deskService.getDeskMembersCounts(userID);
+            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, counter);
+        } catch (GAException e) {
+            LOGGER.error(" " + e);
+            return JsonUtility.getJson(e.getCode(), e.getDescription());
+        }
     }
 }

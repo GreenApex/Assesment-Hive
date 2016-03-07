@@ -4,38 +4,47 @@ import java.util.List;
 
 public class CategoryDTO {
 
-	private String catrgoryID;
-	private String catrgoryName;
-	private List<PrincipleDTO> principleList;
+    private String catergoryID;
+    private String catergoryName;
+    public String templateName;
+    private List<PrincipleDTO> principleList;
 
-	public String getCatrgoryID() {
-		return catrgoryID;
-	}
+    public String getTemplateName() {
+        return templateName;
+    }
 
-	public void setCatrgoryID(String catrgoryID) {
-		this.catrgoryID = catrgoryID;
-	}
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
 
-	public String getCatrgoryName() {
-		return catrgoryName;
-	}
+    public String getCatergoryID() {
+        return catergoryID;
+    }
 
-	public void setCatrgoryName(String catrgoryName) {
-		this.catrgoryName = catrgoryName;
-	}
+    public void setCatergoryID(String catergoryID) {
+        this.catergoryID = catergoryID;
+    }
 
-	public List<PrincipleDTO> getPrincipleList() {
-		return principleList;
-	}
+    public String getCatergoryName() {
+        return catergoryName;
+    }
 
-	public void setPrincipleList(List<PrincipleDTO> principleList) {
-		this.principleList = principleList;
-	}
+    public void setCatergoryName(String catergoryName) {
+        this.catergoryName = catergoryName;
+    }
 
-	@Override
-	public String toString() {
-		return "CategoryDTO [catrgoryID=" + catrgoryID + ", catrgoryName="
-				+ catrgoryName + ", principleList=" + principleList + "]";
-	}
+    public List<PrincipleDTO> getPrincipleList() {
+        return principleList;
+    }
+
+    public void setPrincipleList(List<PrincipleDTO> principleList) {
+        this.principleList = principleList;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryDTO [catergoryID=" + catergoryID + ", catergoryName=" + catergoryName + ", templateName="
+                + templateName + ", principleList=" + principleList + "]";
+    }
 
 }

@@ -1,7 +1,5 @@
 package com.ga.hive.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,14 +10,20 @@ import org.springframework.stereotype.Service;
 
 import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.exception.GAException;
+import com.ga.hive.persistence.entity.AllotTask;
 import com.ga.hive.persistence.entity.Category;
 import com.ga.hive.persistence.entity.Principle;
-import com.ga.hive.persistence.entity.Task;
 import com.ga.hive.persistence.entity.TaskDTO;
 import com.ga.hive.persistence.mapper.ICategoryMapper;
 import com.ga.hive.persistence.mapper.IPrincipalMapper;
+import com.ga.hive.persistence.mapper.ITaskMapper;
 import com.ga.hive.service.ITaskService;
 
+/**
+ * The Class TaskServiceImpl.
+ *
+ * @author Shalaka Nayal
+ */
 @Service
 public class TaskServiceImpl implements ITaskService {
 
@@ -31,79 +35,33 @@ public class TaskServiceImpl implements ITaskService {
     @Autowired
     IPrincipalMapper principalmapper;
 
+    @Autowired
+    ITaskMapper taskMapper;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.service.ITaskService#assignTask(com.ga.hive.persistence.entity.AllotTask)
+     */
     @Override
-    public boolean assignTask(Task task) throws GAException {
-        LOGGER.info("ServiceImpl -assignTask");
-        if (task.getCatrgoryID() != null && task.getPrincipleID() == null) {
-            LOGGER.info("categoryID is : " + task.getCatrgoryID());
-            Category dbCategory = categorymapper.getCategoryByCategoryID(task.getCatrgoryID());
-            List<String> userIDList = new ArrayList<String>();
-            LOGGER.info("inside else");
-            String userIds = dbCategory.getUserID();
-
-            if (userIds.equalsIgnoreCase("null")) {
-                String newUserIDString = new String();
-                newUserIDString = task.getUserID();
-                userIDList.add(newUserIDString);
-            } else {
-                String[] stringArray = userIds.split(",");
-                userIDList = Arrays.asList(stringArray);
-                userIDList.add(task.getUserID());
-            }
-            LOGGER.info(userIDList);
-            String userIDsString = userIDList.toString();
-            userIDsString = userIDsString.replaceAll("[\\[\\]]*", "");
-            dbCategory.setUserID(userIDsString);
-
-            categorymapper.updateCategory(dbCategory);
-
-        }
-        if (task.getPrincipleID() != null && task.getCatrgoryID() == null) {
-            LOGGER.info("categoryID is : " + task.getPrincipleID());
-            Principle dbPrincipal = principalmapper.getPrincipalByprincipalID(task.getPrincipleID());
-            List<String> userIDList = new ArrayList<String>();
-            String userIds = dbPrincipal.getUserID();
-            if (userIds.equalsIgnoreCase("null")) {
-                String newUserIDString = new String();
-                newUserIDString = task.getUserID();
-                userIDList.add(newUserIDString);
-            } else {
-                String[] stringArray = userIds.split(",");
-                userIDList = Arrays.asList(stringArray);
-                userIDList.add(task.getUserID());
-            }
-            LOGGER.info(userIDList);
-            String userIDsString = userIDList.toString();
-            userIDsString = userIDsString.replaceAll("[\\[\\]]*", "");
-            dbPrincipal.setUserID(userIDsString);
-            principalmapper.updatePrincipal(dbPrincipal);
-        }
-
-        if (task.getCatrgoryID() == null && task.getPrincipleID() == null) {
-            throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
-        }
-
-        return true;
+    public boolean assignTask(AllotTask task) throws GAException {
+        LOGGER.info("AssignTask");
+        return taskMapper.allotTaskToUser(task);
     }
 
-    @Override
-    public TaskDTO getMyTasks(String userID) throws GAException {
-        LOGGER.info("getMyTasks : " + userID);
-        TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setUserID(userID);
-        try {
-            List<Principle> principles = principalmapper.getMyAssidnedPrinciples(userID);
-            taskDTO = setPrinciples(taskDTO, principles);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.service.ITaskService#getMyTasks(java.lang.String)
+     */
 
-            List<Category> categories = categorymapper.getMyAssidnedCategories(userID);
-            taskDTO = setCategories(taskDTO, categories);
-
-            return taskDTO;
-        } catch (Exception exception) {
-            throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
-        }
-    }
-
+    /**
+     * Sets the categories.
+     *
+     * @param taskDTO the task dto
+     * @param categories the categories
+     * @return the task dto
+     */
     private TaskDTO setCategories(TaskDTO taskDTO, List<Category> categories) {
         LOGGER.info("Setting Categories");
         if (categories == null)
@@ -119,6 +77,13 @@ public class TaskServiceImpl implements ITaskService {
         return taskDTO;
     }
 
+    /**
+     * Sets the principles.
+     *
+     * @param taskDTO the task dto
+     * @param principles the principles
+     * @return the task dto
+     */
     TaskDTO setPrinciples(TaskDTO taskDTO, List<Principle> principles) {
         LOGGER.info("Setting principles");
         if (principles == null)
@@ -132,5 +97,15 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         return taskDTO;
+    }
+
+    @Override
+    public AllotTask getMyTasks(String userID) throws GAException {
+        LOGGER.info("getMyTasks : " + userID);
+        try {
+            return taskMapper.getMyTasks(userID);
+        } catch (Exception exception) {
+            throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
+        }
     }
 }

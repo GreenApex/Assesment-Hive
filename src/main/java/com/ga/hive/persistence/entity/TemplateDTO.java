@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * The Class TemplateDTO.
  *
- * @author Shalaka
+ * @author Shalaka Nayal
  */
 public class TemplateDTO {
 

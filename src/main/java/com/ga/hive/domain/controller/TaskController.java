@@ -1,5 +1,8 @@
 package com.ga.hive.domain.controller;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,8 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.domain.util.JsonUtility;
 import com.ga.hive.exception.GAException;
-import com.ga.hive.persistence.entity.Task;
-import com.ga.hive.persistence.entity.TaskDTO;
+import com.ga.hive.persistence.entity.AllotTask;
 import com.ga.hive.service.ITaskService;
 
 @RestController
@@ -26,12 +28,25 @@ public class TaskController {
     ITaskService taskservice;
 
     @RequestMapping(value = "/assigntask", method = RequestMethod.POST)
-    public @ResponseBody String assignTask(@RequestBody Task task) {
-        LOGGER.info("TaskController - assignTask ");
-        LOGGER.info("Task : " + task);
+    public @ResponseBody String assignTask(@RequestBody List<AllotTask> tasks) {
+        LOGGER.info("assignTask ");
 
         try {
-            taskservice.assignTask(task);
+            Iterator<AllotTask> iterator = tasks.iterator();
+            while (iterator.hasNext()) {
+
+                AllotTask task = iterator.next();
+
+                LOGGER.info("Task for " + task.getUserid());
+
+                if ((task.getCategoryList() != null || task.getPrincipleList() != null)
+                        && (task.getCategoryList().size() > 0 || task.getPrincipleList().size() > 0)) {
+                    taskservice.assignTask(task);
+                } else {
+                    LOGGER.info(task.getUserid() + " has no tasks");
+                }
+            }
+
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, "Task Saved Successfully.");
         } catch (GAException e) {
             LOGGER.error(" " + e);
@@ -40,19 +55,18 @@ public class TaskController {
 
     }
 
-    @RequestMapping(value = "/getMyTask", method = RequestMethod.GET)
+    @RequestMapping(value = "/getMyTasks", method = RequestMethod.GET)
     public @ResponseBody String getMyTasks(@RequestParam("userID") String userID) {
         LOGGER.info("Getting task for : " + userID);
 
         try {
-            TaskDTO dto = taskservice.getMyTasks(userID);
-            if (dto.getCategories() == null && dto.getPrinciples() == null)
-                return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, "No job found for you.");
-            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, dto);
+            AllotTask task = taskservice.getMyTasks(userID);
+            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, task);
         } catch (GAException e) {
             LOGGER.error(" " + e);
             return JsonUtility.getJson(e.getCode(), e.getDescription());
         }
 
     }
+
 }

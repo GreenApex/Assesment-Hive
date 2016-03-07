@@ -30,7 +30,7 @@ public class ReviewsController {
     IReviewsService reviewsService;
 
     /**
-     * Gets the review by templated.
+     * Gets the review by templateId.
      *
      * @param templateID the template id
      * @param startRange the start range

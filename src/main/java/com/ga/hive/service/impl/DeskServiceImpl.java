@@ -19,7 +19,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.antlr.stringtemplate.language.Cat;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -28,15 +30,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ga.hive.common.ErrorCodes;
 import com.ga.hive.exception.GAException;
 import com.ga.hive.persistence.DbManager;
+import com.ga.hive.persistence.entity.AllotTask;
 import com.ga.hive.persistence.entity.AnsQuestionnaire;
 import com.ga.hive.persistence.entity.AnsTemplate;
+import com.ga.hive.persistence.entity.Category;
 import com.ga.hive.persistence.entity.CategoryDTO;
+import com.ga.hive.persistence.entity.Counter;
+import com.ga.hive.persistence.entity.Principle;
 import com.ga.hive.persistence.entity.PrincipleDTO;
-import com.ga.hive.persistence.entity.QuestionnaireDTO;
+import com.ga.hive.persistence.entity.Questionnaire;
+import com.ga.hive.persistence.entity.TaskTemplate;
+import com.ga.hive.persistence.entity.Team;
 import com.ga.hive.persistence.entity.TemplateDTO;
+import com.ga.hive.persistence.entity.User;
+import com.ga.hive.service.ICategoryService;
 import com.ga.hive.service.IDeskService;
+import com.ga.hive.service.IPrincipalService;
+import com.ga.hive.service.IQuestionnarieService;
+import com.ga.hive.service.ITaskService;
+import com.ga.hive.service.ITeamService;
+import com.ga.hive.service.IUserService;
 import com.google.gson.Gson;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DeskServiceImpl.
  *
@@ -46,6 +62,30 @@ import com.google.gson.Gson;
 public class DeskServiceImpl implements IDeskService {
 
     private static final Logger LOGGER = Logger.getLogger(DeskServiceImpl.class);
+
+    /** The task service. */
+    @Autowired
+    ITaskService taskService;
+
+    /** The categories service. */
+    @Autowired
+    ICategoryService categoriesService;
+
+    /** The princi service. */
+    @Autowired
+    IPrincipalService princiService;
+
+    /** The quetionnaire service. */
+    @Autowired
+    IQuestionnarieService quetionnaireService;
+
+    /** The team service. */
+    @Autowired
+    ITeamService teamService;
+
+    /** The user service. */
+    @Autowired
+    IUserService userService;
 
     /*
      * (non-Javadoc)
@@ -83,84 +123,6 @@ public class DeskServiceImpl implements IDeskService {
             throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
         }
         return null;
-    }
-
-    /**
-     * Save data to file.
-     *
-     * @param templateDTO the template dto
-     * @param fileName the file name
-     * @return true, if successful
-     */
-    public boolean saveDataToFile(TemplateDTO templateDTO, String fileName) {
-        FileOutputStream fop = null;
-        File file;
-        try {
-
-            file = new File("/home/local-sn/Desktop/" + fileName + ".txt");
-            fop = new FileOutputStream(file);
-            // if file doesn't exists, then create it
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            String template = null;
-
-            template = templateDTO.getTemplateID() + "," + templateDTO.getTemplateName() + ",";
-            List<CategoryDTO> categoryDTOs = templateDTO.getCategoryList();
-            Iterator<CategoryDTO> iterator = categoryDTOs.iterator();
-            while (iterator.hasNext()) {
-                String categoryStr = null;
-                CategoryDTO category = iterator.next();
-
-                categoryStr = template + category.getCatrgoryID() + "$" + category.getCatrgoryName() + ",";
-                List<PrincipleDTO> principleDTOs = category.getPrincipleList();
-                Iterator<PrincipleDTO> itr = principleDTOs.iterator();
-                while (itr.hasNext()) {
-
-                    String priciple = null;
-                    PrincipleDTO principleDTO = itr.next();
-
-                    priciple = categoryStr + principleDTO.getPrincipleID() + "$" + principleDTO.getPrincipleName()
-                            + ",";
-                    List<QuestionnaireDTO> questionnaireDTOs = principleDTO.getQuestionnaireList();
-                    Iterator<QuestionnaireDTO> questionnaireItr = questionnaireDTOs.iterator();
-                    while (questionnaireItr.hasNext()) {
-                        String question = null;
-                        QuestionnaireDTO questionnaireDTO = questionnaireItr.next();
-
-                        question = priciple + questionnaireDTO.getqID() + "$" + questionnaireDTO.getName() + "";
-
-                        byte[] contentInBytes = question.getBytes();
-
-                        fop.write(contentInBytes);
-                        fop.write("\n".getBytes());
-
-                    }
-
-                }
-
-            }
-
-            // --------------------------------------------------------------
-            fop.flush();
-            fop.close();
-
-            System.out.println("Done");
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fop != null) {
-                    fop.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-
     }
 
     /**
@@ -312,6 +274,61 @@ public class DeskServiceImpl implements IDeskService {
 
     }
 
+    // @Override
+    // public Boolean saveReviewedTemplates(AllotTask task) throws GAException {
+    // try {
+    // Connection connection = DbManager.getConnection();
+    // Statement stmt = connection.createStatement();
+    // TaskTemplate template = task.getTaskTemplate();
+    // CategoryDTO categoryDTO = template.getCategory();
+    // String query = "INSERT INTO reviewedTemplates VALUES ";
+    //
+    // LOGGER.info(": " + query);
+    // List<PrincipleDTO> list = categoryDTO.getPrincipleList();
+    // Iterator<PrincipleDTO> iterator = list.iterator();
+    // int index = 0;
+    // while (iterator.hasNext()) {
+    // index++;
+    // PrincipleDTO principle = iterator.next();
+    //
+    // /**
+    // * Preparing QA column
+    // */
+    // Gson gson = new Gson();
+    //
+    // TaskTemplate reviewedTemplate = new TaskTemplate();
+    // List<PrincipleDTO> rList = new ArrayList<PrincipleDTO>();
+    // rList.add(principle);
+    // CategoryDTO rCategory = new CategoryDTO();
+    // rCategory.setCatrgoryID(template.getCategory().getCatrgoryID());
+    // rCategory.setCatrgoryName(template.getCategory().getCatrgoryName());
+    // rCategory.setPrincipleList(rList);
+    // reviewedTemplate.setCategory(rCategory);
+    // String qa = gson.toJson(reviewedTemplate);
+    //
+    // String creationtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    //
+    // if (index <= 1) {
+    // query = query + "('" + task.getUserid() + "','" + template.getTemplateName() + "',  '"
+    // + categoryDTO.getCatrgoryName() + "', '" + principle.getPrincipleName() + "','" + qa
+    // + "','" + creationtime + "')";
+    // } else
+    // query = query + ",( '" + task.getUserid() + "', '" + template.getTemplateName() + "', '"
+    // + categoryDTO.getCatrgoryName() + "', '" + principle.getPrincipleName() + "','" + qa
+    // + "','" + creationtime + "')";
+    // }
+    //
+    // LOGGER.info(": " + query);
+    // boolean check = stmt.execute(query);
+    // DbManager.closeConnection(connection);
+    // return check;
+    // } catch (SQLException exception) {
+    //
+    // exception.printStackTrace();
+    // throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
+    // }
+    // }
+
     /*
      * (non-Javadoc)
      * 
@@ -332,7 +349,9 @@ public class DeskServiceImpl implements IDeskService {
 
             Map<String, CategoryDTO> map = new HashMap<String, CategoryDTO>();
 
+            int index = 0;
             while (newRs.next()) {
+                index++;
                 TemplateDTO templateDTO = new TemplateDTO();
                 String templateid = newRs.getString("templateid");
                 String templatename = newRs.getString("templatename");
@@ -347,7 +366,7 @@ public class DeskServiceImpl implements IDeskService {
                 LOGGER.info("" + babycategory);
                 ObjectMapper mapper = new ObjectMapper();
                 CategoryDTO categoryDTO = mapper.readValue(babycategory, CategoryDTO.class);
-                map.put(templateid, categoryDTO);
+                map.put(templateid + "-" + index, categoryDTO);
             }
 
             LOGGER.info("total Templates: " + tempDtos);
@@ -360,9 +379,10 @@ public class DeskServiceImpl implements IDeskService {
                 while (it.hasNext()) {
                     @SuppressWarnings("unchecked")
                     Map.Entry<String, CategoryDTO> pair = (Map.Entry<String, CategoryDTO>) it.next();
-                    System.out.println(pair.getKey() + " = " + pair.getValue());
+                    String[] tempID = pair.getKey().split("-");
+                    System.out.println(tempID[0] + " = " + pair.getValue());
 
-                    if (templateDTO.getTemplateID().equals(pair.getKey())) {
+                    if (templateDTO.getTemplateID().equals(tempID[0])) {
                         categoryList.add(pair.getValue());
                     }
                 }
@@ -388,4 +408,36 @@ public class DeskServiceImpl implements IDeskService {
         }
         return null;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.service.IDeskService#getDeskMembersCounts(java.lang.String)
+     */
+    @Override
+    public Counter getDeskMembersCounts(String userID) throws GAException {
+        Counter counter = new Counter();
+        List<TemplateDTO> templateDTOs = getAllTemplates();
+        counter.setCategoriesCount(templateDTOs.size());
+
+        AllotTask allotTask = taskService.getMyTasks(userID);
+        counter.setTasksCount((allotTask.getCategoryList().size() + allotTask.getPrincipleList().size()));
+
+        List<Category> categories = categoriesService.getAllCategory();
+        counter.setCategoriesCount(categories.size());
+
+        List<Principle> principles = princiService.getAllPrincipal();
+        counter.setPrinciplesCount(principles.size());
+
+        List<Questionnaire> questionnaires = quetionnaireService.getAllQuestionnarie();
+        counter.setQuestionnaireCount(questionnaires.size());
+
+        List<Team> teams = teamService.getAllteam();
+        counter.setTeamsCount(teams.size());
+
+        List<User> users = userService.getActiveUsers();
+        counter.setUsersCount(users.size());
+        return counter;
+    }
+
 }

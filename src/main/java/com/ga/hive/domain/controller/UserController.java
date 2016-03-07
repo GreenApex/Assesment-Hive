@@ -107,4 +107,17 @@ public class UserController {
 
     }
 
+    @RequestMapping(value = "/deleteUsers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String deleteUsers(@RequestParam("email") String email) {
+        LOGGER.info("getAllUsers controller");
+        try {
+            boolean check = userService.deleteUsers(email);
+            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, check);
+        } catch (GAException e) {
+            LOGGER.error(" " + e);
+            return JsonUtility.getJson(e.getCode(), e.getDescription());
+        }
+
+    }
+
 }

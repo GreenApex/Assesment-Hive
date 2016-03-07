@@ -96,7 +96,7 @@ public class TeamController {
             if (teamDTO != null) {
                 return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, teamDTO);
             } else {
-                return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, "No team Members found.");
+                return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, null);
             }
         } catch (GAException e) {
             LOGGER.error(" " + e);

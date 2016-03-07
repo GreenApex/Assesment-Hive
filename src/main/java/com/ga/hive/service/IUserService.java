@@ -8,7 +8,7 @@ import com.ga.hive.persistence.entity.User;
 /**
  * The Interface IUserService.
  *
- * @author Shalaka
+ * @author Shalaka Nayal
  */
 public interface IUserService {
 
@@ -31,7 +31,28 @@ public interface IUserService {
      */
     Boolean registerUser(User user) throws GAException;
 
+    /**
+     * Gets the all users.
+     *
+     * @return the all users
+     * @throws GAException the GA exception
+     */
     List<User> getAllUsers() throws GAException;
 
+    /**
+     * Gets the active users.
+     *
+     * @return the active users
+     * @throws GAException the GA exception
+     */
     List<User> getActiveUsers() throws GAException;
+
+    /**
+     * Delete users.
+     *
+     * @param email the email
+     * @return true, if successful
+     * @throws GAException the GA exception
+     */
+    boolean deleteUsers(String email) throws GAException;
 }

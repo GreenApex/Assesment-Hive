@@ -20,7 +20,7 @@ import com.ga.hive.persistence.mapper.IUserMapper;
 /**
  * The Class UserMapperImpl.
  *
- * @author Shalaka
+ * @author Shalaka Nayal
  */
 @Repository
 public class UserMapperImpl implements IUserMapper {
@@ -144,6 +144,11 @@ public class UserMapperImpl implements IUserMapper {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.persistence.mapper.IUserMapper#getAllUsers()
+     */
     @Override
     public List<User> getAllUsers() throws GAException {
         LOGGER.info("get All Users");
@@ -183,6 +188,11 @@ public class UserMapperImpl implements IUserMapper {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.persistence.mapper.IUserMapper#getActiveUsers()
+     */
     @Override
     public List<User> getActiveUsers() throws GAException {
         LOGGER.info("get Active Users");
@@ -220,5 +230,29 @@ public class UserMapperImpl implements IUserMapper {
             exception.printStackTrace();
             throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ga.hive.persistence.mapper.IUserMapper#makeUserInactive(java.lang.String)
+     */
+    @Override
+    public Boolean makeUserInactive(String email) throws GAException {
+        LOGGER.info("make User Inactive  for " + email);
+        try {
+            Connection connection = DbManager.getConnection();
+            String query = "UPDATE users set active=false where email='" + email + "'";
+            Statement statement = connection.createStatement();
+            int i = statement.executeUpdate(query);
+            LOGGER.info(i + " rows inserted");
+            DbManager.closeConnection(connection);
+            return true;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            LOGGER.error("Internal failure");
+            throw new GAException(ErrorCodes.GA_DATABASE_GENERAL, exception);
+        }
+
     }
 }

@@ -18,15 +18,29 @@ import com.ga.hive.exception.GAException;
 import com.ga.hive.persistence.entity.Questionnaire;
 import com.ga.hive.service.IQuestionnarieService;
 
+/**
+ * The Class QuestionnaireController.
+ *
+ * @author Shalaka Nayal
+ */
 @RestController
 @RequestMapping(value = "/questionnaire")
 public class QuestionnaireController {
 
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = Logger.getLogger(QuestionnaireController.class);
 
+    /** The qustionnariservice. */
     @Autowired
     IQuestionnarieService qustionnariservice;
 
+    /**
+     * Adds the questionnarie.
+     *
+     * @param questionnaire the questionnaire
+     * @return the string
+     * @throws GAException the GA exception
+     */
     @RequestMapping(value = "/addquestionnaire", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String addQuestionnarie(@RequestBody Questionnaire questionnaire) throws GAException {
         LOGGER.info("addQuestionnarie controller");
@@ -37,6 +51,11 @@ public class QuestionnaireController {
             return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, false);
     }
 
+    /**
+     * Gets the all questionnarie.
+     *
+     * @return the all questionnarie
+     */
     @RequestMapping(value = "/getallquestionnarie", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String getAllQuestionnarie() {
         LOGGER.info("getAllQuestionnarie");
@@ -53,6 +72,13 @@ public class QuestionnaireController {
         }
     }
 
+    /**
+     * Gets the questionnarie by id.
+     *
+     * @param questionnaireID the questionnaire id
+     * @return the questionnarie by id
+     * @throws GAException the GA exception
+     */
     @RequestMapping(value = "/getquestionnarieid", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String getQuestionnarieByID(@RequestParam("questionnaireID") String questionnaireID)
             throws GAException {
@@ -70,6 +96,13 @@ public class QuestionnaireController {
         }
     }
 
+    /**
+     * Delete questionnaire.
+     *
+     * @param qid the qid
+     * @return the string
+     * @throws GAException the GA exception
+     */
     @RequestMapping(value = "/deletequestionnaire", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String deleteQuestionnaire(@RequestParam("qid") String qid) throws GAException {
         LOGGER.info("deleteQuestionnaire controller");
