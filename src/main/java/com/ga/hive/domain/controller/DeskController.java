@@ -100,6 +100,7 @@ public class DeskController {
         try {
 
             Counter counter = deskService.getDeskMembersCounts(userID);
+            System.out.println(counter);
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, counter);
         } catch (GAException e) {
             LOGGER.error(" " + e);

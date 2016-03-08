@@ -17,7 +17,7 @@ public class Report {
     public void setUserID(String userID) {
         this.userID = userID;
     }
-
+                                                                                
     public String getTemplatename() {
         return templatename;
     }

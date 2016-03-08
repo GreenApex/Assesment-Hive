@@ -40,7 +40,7 @@ public class ReportController {
      * @param endDate the end date
      * @return the report
      */
-    @RequestMapping(value = "/getReport", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/getReport", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String getReport(@RequestParam("categoryName") String categoryName,
             @RequestParam("principleName") String principleName, @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate) {

@@ -319,22 +319,40 @@ public class DeskServiceImpl implements IDeskService {
         counter.setCategoriesCount(templateDTOs.size());
 
         AllotTask allotTask = taskService.getMyTasks(userID);
-        counter.setTasksCount((allotTask.getCategoryList().size() + allotTask.getPrincipleList().size()));
+        if (allotTask.getCategoryList() == null)
+            counter.setTasksCount(0);
+        else
+            counter.setTasksCount(allotTask.getCategoryList().size());
 
         List<Category> categories = categoriesService.getAllCategory();
-        counter.setCategoriesCount(categories.size());
+        if (categories == null)
+            counter.setCategoriesCount(0);
+        else
+            counter.setCategoriesCount(categories.size());
 
         List<Principle> principles = princiService.getAllPrincipal();
-        counter.setPrinciplesCount(principles.size());
+        if (principles == null)
+            counter.setPrinciplesCount(0);
+        else
+            counter.setPrinciplesCount(principles.size());
 
         List<Questionnaire> questionnaires = quetionnaireService.getAllQuestionnarie();
-        counter.setQuestionnaireCount(questionnaires.size());
+        if (principles == null)
+            counter.setQuestionnaireCount(0);
+        else
+            counter.setQuestionnaireCount(questionnaires.size());
 
         List<Team> teams = teamService.getAllteam();
-        counter.setTeamsCount(teams.size());
+        if (principles == null)
+            counter.setTeamsCount(0);
+        else
+            counter.setTeamsCount(teams.size());
 
         List<User> users = userService.getActiveUsers();
-        counter.setUsersCount(users.size());
+        if (principles == null)
+            counter.setUsersCount(0);
+        else
+            counter.setUsersCount(users.size());
         return counter;
     }
 
